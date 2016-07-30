@@ -6,10 +6,12 @@
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #define FIFO_NAME "/tmp/my_fifo"
 #define BUFFER_SIZE PIPE_BUF
 #define TEN_MEG (1024 * 1024 * 10)
+
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +37,7 @@ int main(int argc, char *argv[])
 		while(bytes_sent < TEN_MEG) {
 			res = write(pipe_fd, buffer, BUFFER_SIZE);
 			if (res == -1) {
-				fprintf(stderr, "Write error on pipe: %s\n");
+				fprintf(stderr, "Write error on pipe: %s\n", strerror(errno));
 				
 				return -1;
 			}
