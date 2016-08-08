@@ -9,7 +9,7 @@ void read_file(int fd, char buf[], int len)
 			perror("read");
 			break;
 		}
-		
+		// partial read	
 		len -= ret;
 		buf += ret;
 	}
