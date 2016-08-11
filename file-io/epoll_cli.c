@@ -39,5 +39,6 @@ int main()
         return 1;
     }
     printf("receive message : %s\n", rcvbuf);
-
+    
+    return 0;
 }
