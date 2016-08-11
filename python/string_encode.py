@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
 
 # 告诉python解释器，按照utf-8编码读取源代码，
 # 但源代码保存格式为utf-8 without BOM
