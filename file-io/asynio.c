@@ -83,6 +83,9 @@ int main(int argc, char *argv[])
     for (;;) {
         for (i = 0; i < NBUF; i++) {
             switch (bufs[i].op) {
+            /*
+              Read from the input file if more data remains unread.
+             */    
                 case UNUSED:
                         if (off < sbuf.st_size) {
                             bufs[i].op = READ_PENDING;
@@ -112,6 +115,9 @@ int main(int argc, char *argv[])
                                 return 1;
                             }
                         }
+                        /*
+                            A read is complete; translate the buffer and write it
+                         */
 
                         if ((n = aio_return(&bufs[i].aiocb)) < 0) {
                             perror("aio_return failed");
