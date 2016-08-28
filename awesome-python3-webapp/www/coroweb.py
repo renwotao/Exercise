@@ -59,6 +59,12 @@ def has_named_kw_args(fn):
             args.append(name)
     return tuple(args)
 
+def has_var_kw_arg(fn):
+    params = inspect.signature(fn).parameters
+    for name, param in params.items():
+        if param.kind == inspect.Parameter.VAR_KEYWORD:
+            return True
+
 def has_request_arg(fn):
     sig = inspect.signature(fn)
     params = sig.parameters
@@ -159,6 +165,9 @@ def add_routes(app, module_name):
         name = module_name[n+1:]
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
     for attr in dir(mod):
+        if attr.startswith('_'):
+            continue
+        fn = getattr(mod, attr)
         if callable(fn):
             method = getattr(fn, '__method__', None)
             path = getattr(fn, '__route__', None)
