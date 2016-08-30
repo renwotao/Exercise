@@ -125,7 +125,7 @@ class ModelMetaclass(type):
         attrs['__mappings__'] = mappings # 保存属性和列的映射关系
         attrs['__table__'] = tableName
         attrs['__primary_key__'] = primaryKey # 主键属性名
-        attrs['__field__'] = fields # 除主键外的属性名
+        attrs['__fields__'] = fields # 除主键外的属性名
         attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ','.join(escaped_fields), tableName)
         attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ','.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ','.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
@@ -141,7 +141,7 @@ class Model(dict, metaclass=ModelMetaclass):
         try:
             return self[key]
         except KeyError:
-            raise AttributeError(r"'Model' object has no attribute '%s'" % key)
+            raise AttributeError("'Model' object has no attribute '%s'" % key)
 
     def __setattr__(self, key, value):
         self[key] = value
@@ -185,43 +185,43 @@ class Model(dict, metaclass=ModelMetaclass):
         rs = await select(' '.join(sql), args)
         return [cls(**r) for r in rs]
 
-@classmethod
-async def findNumber(cls, selectField, where=None, args=None):
-    ' find number by select and where. '
-    sql = ['select %s _num_ from `%s`' % (selectField, cls.__table__)]
-    if where:
-        sql.append('where')
-        sql.append(where)
-    rs = await select(' '.jion(sql), args, 1)
-    if len(rs) == 0:
-        return None
-    return rs[0]['_num_']
+    @classmethod
+    async def findNumber(cls, selectField, where=None, args=None):
+        ' find number by select and where. '
+        sql = ['select %s _num_ from `%s`' % (selectField, cls.__table__)]
+        if where:
+            sql.append('where')
+            sql.append(where)
+        rs = await select(' '.jion(sql), args, 1)
+        if len(rs) == 0:
+            return None
+        return rs[0]['_num_']
 
-@classmethod
-async def find(cls, pk):
-    ' find object by primary key. '
-    rs = await select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__), [pk], 1)
-    if len(rs) == 0:
-        return None
-    return cls(**rs[0])
+    @classmethod
+    async def find(cls, pk):
+        ' find object by primary key. '
+        rs = await select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__), [pk], 1)
+        if len(rs) == 0:
+             return None
+        return cls(**rs[0])
 
-async def save(self):
-    args = list(map(self.getValueOrDefault, self.__fields__))
-    args.append(self.getValueOrDefault(self.__primary_key__))
-    rows = await execute(self.__insert__, args_)
-    if row != 1:
-        logging.warn('failed to insert record: affected rows: %s' % rows)
+    async def save(self):
+        args = list(map(self.getValueOrDefault, self.__fields__))
+        args.append(self.getValueOrDefault(self.__primary_key__))
+        rows = await execute(self.__insert__, args)
+        if rows != 1:
+            logging.warn('failed to insert record: affected rows: %s' % rows)
 
-async def update(self):
-    args = list(map(self.getValue, self.__fields__))
-    args.append(self.getValue(self.__primary_key__))
-    rows = await execute(self.__update__, args)
-    if rows != 1:
-        logging.warn('failed to update by primary key: affected rows: %s' % rows)
+    async def update(self):
+        args = list(map(self.getValue, self.__fields__))
+        args.append(self.getValue(self.__primary_key__))
+        rows = await execute(self.__update__, args)
+        if rows != 1:
+            logging.warn('failed to update by primary key: affected rows: %s' % rows)
 
-async def remove(self):
-    args = [self.getValue(self.__primary_key__)]
-    rows = await execute(self.__delete__, args)
-    if rows != 1:
-        logging.warn('failed to remove by primay key: affected rows: %s' %rows)
+    async def remove(self):
+        args = [self.getValue(self.__primary_key__)]
+        rows = await execute(self.__delete__, args)
+        if rows != 1:
+            logging.warn('failed to remove by primay key: affected rows: %s' %rows)
     
