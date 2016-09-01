@@ -15,9 +15,9 @@
 
 static sem_t *sem;
 
-sem_t *mylock_init()
+void *mylock_init()
 {
-    sem_destroy(sem);
+    sem_init(sem, 1, 1);
 }
 
 void mylock_destroy(sem_t *sem)
