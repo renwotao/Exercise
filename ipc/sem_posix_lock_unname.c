@@ -15,7 +15,7 @@
 
 static sem_t *sem;
 
-void *mylock_init()
+void mylock_init()
 {
     sem_init(sem, 1, 1);
 }
@@ -83,11 +83,13 @@ int main()
     int count, shmfd, ret;
     int *shm_p;
 
-    sem = mylock_init();
-    if (sem == NULL) {
-        perror("mylock_init(): error!");
-        exit(1);
+    sem = (sem_t *)mmap(NULL, sizeof(sem_t), PROT_WRITE|PROT_READ, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
+    if ((void *)sem == MAP_FAILED) {
+	perror("mmap()");
+	exit(1);
     }
+
+    mylock_init();
 
     // create a POSIX shared memory
     shmfd = shm_open(SHMPATH, O_RDWR|O_CREAT|O_TRUNC, 0600);
