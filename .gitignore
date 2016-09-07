@@ -33,3 +33,11 @@
 
 # other
 *.jpg
+*.txt
+*.db
+
+# dump
+core
+
+# dir
+__pycache__
