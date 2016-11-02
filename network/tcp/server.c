@@ -39,10 +39,10 @@ int main()
     int rc;
     char buf[1];
 
-    local.sin_family = AF_INET;
-    local.sin_port = htons(7500);
-    local.sin_addr.s_addr = htonl(INADDR_ANY);
-    s = socket(AF_INET, SOCK_STREAM, 0);
+    local.sin_family = AF_INET;  // 物理层、链路层协议
+    local.sin_port = htons(7500);  // 传输层端口
+    local.sin_addr.s_addr = htonl(INADDR_ANY);  // IP层（网络层）IP地址
+    s = socket(AF_INET, SOCK_STREAM, 0);  // SOCK_STREAM 定义传输层选择的协议，这里选择TCP
     if (s < 0) {
         perror("socket call failed");
         exit(1);
