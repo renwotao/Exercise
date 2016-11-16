@@ -10,6 +10,7 @@ SOCKET tcp_server( char *hname, char *sname)
     if ( !isvalidsock( s ) )
         error( 1, errno, "socket call failed" );
     
+    // TCP的SO_REUSEADDR用于服务器， 以便服务器崩溃重启时， 可直接Bind处于TIME_WAIT状态的端口。
     if ( setsockopt( s, SOL_SOCKET, SO_REUSEADDR,
         ( char * )&on, sizeof( on ) ) )
         error( 1, errno, "setsockopt failed" );
